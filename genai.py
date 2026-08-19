@@ -47,7 +47,7 @@ def inject_css() -> None:
     st.markdown(
         """
         <style>
-        @import url('[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 
         :root {
             --da-ink: #F5F1FF;
