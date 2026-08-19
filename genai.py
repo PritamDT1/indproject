@@ -43,305 +43,577 @@ st.set_page_config(page_title="Document Assistant", page_icon="📄", layout="wi
 # Paper-sage background, ink-teal "stamp" accent, brass secondary accent,
 # a display serif for headers, and a mono utility face for metadata.
 # --------------------------------------------------------------------------
-
 def inject_css() -> None:
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+        @import url('[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap)');
 
         :root {
-            --da-ink: #232821;
-            --da-ink-soft: #5C6259;
-            --da-ink-faint: #74796C;
-            --da-paper: #EDEFE7;
-            --da-card: #FFFFFF;
-            --da-line: #D6D9CB;
-            --da-accent: #1F6F5C;
-            --da-accent-soft: #E4EEE9;
-            --da-brass: #B4802B;
-            --da-radius: 10px;
-            --da-font-display: 'Fraunces', Georgia, serif;
-            --da-font-body: 'IBM Plex Sans', -apple-system, sans-serif;
-            --da-font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+            --da-ink: #F5F1FF;
+            --da-ink-soft: #B8B2D6;
+            --da-ink-faint: #827C9F;
+            --da-paper: #050612;
+            --da-card: rgba(15, 17, 40, 0.88);
+            --da-card-solid: #0F1128;
+            --da-line: rgba(151, 126, 255, 0.24);
+            --da-accent: #8C7BFF;
+            --da-accent-bright: #B7A9FF;
+            --da-accent-soft: rgba(140, 123, 255, 0.12);
+            --da-cyan: #4DE8FF;
+            --da-pink: #FF69D4;
+            --da-brass: #F5C76B;
+            --da-radius: 14px;
+            --da-font-display: 'Space Grotesk', sans-serif;
+            --da-font-body: 'Space Grotesk', sans-serif;
+            --da-font-mono: 'Space Mono', monospace;
+            --da-glow: 0 0 24px rgba(140, 123, 255, 0.18);
         }
 
-        /* ---- base canvas ---- */
+        /* ---- cosmic canvas ---- */
         [data-testid="stAppViewContainer"] {
-            background: var(--da-paper) !important;
+            position: relative;
             color: var(--da-ink) !important;
             font-family: var(--da-font-body) !important;
+            background:
+                radial-gradient(circle at 18% 8%, rgba(79, 91, 255, 0.20), transparent 30rem),
+                radial-gradient(circle at 85% 20%, rgba(255, 105, 212, 0.12), transparent 26rem),
+                radial-gradient(circle at 65% 90%, rgba(77, 232, 255, 0.10), transparent 30rem),
+                linear-gradient(145deg, #050612 0%, #090A1D 48%, #050612 100%) !important;
         }
+
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.55;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,0.95) 0 1px, transparent 1.3px),
+                radial-gradient(circle, rgba(140,123,255,0.8) 0 1px, transparent 1.4px),
+                radial-gradient(circle, rgba(77,232,255,0.65) 0 1px, transparent 1.3px);
+            background-position: 0 0, 35px 75px, 115px 30px;
+            background-size: 150px 150px, 220px 220px, 285px 285px;
+            animation: da-stars-drift 45s linear infinite;
+        }
+
+        [data-testid="stAppViewContainer"] > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes da-stars-drift {
+            from { background-position: 0 0, 35px 75px, 115px 30px; }
+            to { background-position: 0 150px, 255px 295px, 400px 315px; }
+        }
+
         [data-testid="stHeader"] {
-            background: var(--da-paper) !important;
+            background: rgba(5, 6, 18, 0.72) !important;
             border-bottom: 1px solid var(--da-line);
+            backdrop-filter: blur(14px);
         }
+
+        [data-testid="stToolbar"] {
+            color: var(--da-ink) !important;
+        }
+
         [data-testid="stMainBlockContainer"] {
-            max-width: 900px;
+            max-width: 940px;
             padding-top: 2.25rem;
+            padding-bottom: 4rem;
         }
 
         /* ---- typography ---- */
+        [data-testid="stMarkdownContainer"],
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] li {
+            color: var(--da-ink);
+        }
+
+        [data-testid="stMarkdownContainer"] h1,
+        [data-testid="stMarkdownContainer"] h2,
         [data-testid="stMarkdownContainer"] h3,
         [data-testid="stMarkdownContainer"] h4 {
             font-family: var(--da-font-display) !important;
             font-weight: 600 !important;
             color: var(--da-ink) !important;
+            letter-spacing: -0.02em;
         }
-        [data-testid="stMarkdownContainer"] p { line-height: 1.65; }
-        [data-testid="stMarkdownContainer"] a { color: var(--da-accent); }
+
+        [data-testid="stMarkdownContainer"] p {
+            line-height: 1.7;
+        }
+
+        [data-testid="stMarkdownContainer"] a {
+            color: var(--da-cyan);
+            text-decoration-color: rgba(77, 232, 255, 0.4);
+        }
+
         [data-testid="stMarkdownContainer"] code {
             font-family: var(--da-font-mono);
-            background: var(--da-paper);
+            color: var(--da-cyan);
+            background: rgba(5, 6, 18, 0.78);
             border: 1px solid var(--da-line);
-            border-radius: 4px;
+            border-radius: 5px;
             padding: 0.1rem 0.35rem;
         }
+
         [data-testid="stCaptionContainer"] {
+            color: var(--da-ink-faint) !important;
             font-family: var(--da-font-mono) !important;
             letter-spacing: 0.02em;
         }
 
         /* ---- sidebar ---- */
         [data-testid="stSidebar"] {
-            background: var(--da-card) !important;
+            background:
+                radial-gradient(circle at 25% 5%, rgba(140, 123, 255, 0.15), transparent 18rem),
+                rgba(7, 8, 24, 0.94) !important;
             border-right: 1px solid var(--da-line);
+            backdrop-filter: blur(18px);
         }
-        [data-testid="stSidebarContent"] { padding-top: 1.5rem; }
+
+        [data-testid="stSidebarContent"] {
+            padding-top: 1.5rem;
+        }
+
         .da-sidebar-title {
             font-family: var(--da-font-mono);
-            font-size: 0.72rem;
-            letter-spacing: 0.16em;
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            color: var(--da-brass);
+            color: var(--da-cyan);
             border-bottom: 1px solid var(--da-line);
-            padding-bottom: 0.6rem;
+            padding-bottom: 0.65rem;
             margin-bottom: 1.1rem;
+            text-shadow: 0 0 14px rgba(77, 232, 255, 0.5);
         }
+
         [data-testid="stSidebar"] [data-testid="stWidgetLabel"] p {
             font-family: var(--da-font-mono) !important;
-            font-size: 0.7rem !important;
-            letter-spacing: 0.1em;
+            font-size: 0.68rem !important;
+            letter-spacing: 0.11em;
             text-transform: uppercase;
             color: var(--da-ink-soft) !important;
         }
 
         /* ---- chips ---- */
-        .da-chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
-        .da-chip {
-            font-family: var(--da-font-mono);
-            font-size: 0.66rem;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-            color: var(--da-ink-soft);
-            background: var(--da-paper);
-            border: 1px solid var(--da-line);
-            border-radius: 999px;
-            padding: 0.15rem 0.55rem;
+        .da-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-top: 0.55rem;
         }
 
-        /* ---- hero index card ---- */
-        .da-hero {
-            background: var(--da-card);
-            border: 1px solid var(--da-line);
-            border-top: 3px solid var(--da-accent);
-            border-radius: var(--da-radius);
-            padding: 1.75rem 2rem 1.5rem;
-            margin-bottom: 1.75rem;
+        .da-chip {
+            font-family: var(--da-font-mono);
+            font-size: 0.64rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--da-cyan);
+            background: rgba(77, 232, 255, 0.06);
+            border: 1px solid rgba(77, 232, 255, 0.25);
+            border-radius: 999px;
+            padding: 0.2rem 0.6rem;
+            box-shadow: inset 0 0 12px rgba(77, 232, 255, 0.04);
         }
+
+        /* ---- cosmic hero ---- */
+        .da-hero {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+            background:
+                linear-gradient(125deg, rgba(20, 22, 53, 0.96), rgba(10, 11, 30, 0.92));
+            border: 1px solid rgba(151, 126, 255, 0.34);
+            border-top: 2px solid var(--da-accent-bright);
+            border-radius: var(--da-radius);
+            padding: 2rem 2.1rem 1.6rem;
+            margin-bottom: 1.75rem;
+            box-shadow:
+                var(--da-glow),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+            backdrop-filter: blur(14px);
+        }
+
+        .da-hero::before {
+            content: "";
+            position: absolute;
+            z-index: -2;
+            width: 260px;
+            height: 260px;
+            right: -80px;
+            top: -110px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 35% 35%,
+                    rgba(255,255,255,0.85) 0 1%,
+                    var(--da-accent) 3%,
+                    rgba(140,123,255,0.3) 24%,
+                    rgba(140,123,255,0.05) 54%,
+                    transparent 70%);
+            filter: blur(1px);
+            box-shadow: 0 0 65px rgba(140, 123, 255, 0.2);
+        }
+
+        .da-hero::after {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            width: 330px;
+            height: 110px;
+            right: -115px;
+            top: 8px;
+            border: 1px solid rgba(77, 232, 255, 0.2);
+            border-radius: 50%;
+            transform: rotate(-18deg);
+        }
+
         .da-hero__eyebrow {
             font-family: var(--da-font-mono);
-            font-size: 0.7rem;
-            letter-spacing: 0.18em;
+            font-size: 0.67rem;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--da-brass);
-            margin-bottom: 0.5rem;
+            color: var(--da-cyan);
+            margin-bottom: 0.65rem;
+            text-shadow: 0 0 14px rgba(77, 232, 255, 0.45);
         }
+
         .da-hero__title {
             font-family: var(--da-font-display);
-            font-weight: 600;
-            font-size: 2.1rem;
+            font-weight: 700;
+            font-size: clamp(2.25rem, 7vw, 3.35rem);
             color: var(--da-ink);
-            line-height: 1.15;
-            margin-bottom: 0.4rem;
+            line-height: 1.05;
+            letter-spacing: -0.045em;
+            margin-bottom: 0.6rem;
+            background: linear-gradient(95deg, #FFFFFF, #CFC7FF 52%, #7BEFFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
         .da-hero__subtitle {
             color: var(--da-ink-soft);
-            font-size: 0.98rem;
-            max-width: 50ch;
-            margin-bottom: 1.25rem;
+            font-size: 1rem;
+            line-height: 1.65;
+            max-width: 52ch;
+            margin-bottom: 1.35rem;
         }
+
         .da-hero__fields {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.75rem;
-            border-top: 1px dashed var(--da-line);
+            gap: 1rem 2.25rem;
+            border-top: 1px solid var(--da-line);
             padding-top: 1rem;
         }
-        .da-field { display: flex; flex-direction: column; gap: 0.15rem; }
+
+        .da-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            min-width: 110px;
+        }
+
         .da-field__label {
             font-family: var(--da-font-mono);
-            font-size: 0.64rem;
-            letter-spacing: 0.14em;
+            font-size: 0.61rem;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
             color: var(--da-ink-faint);
         }
+
         .da-field__value {
             font-family: var(--da-font-mono);
-            font-size: 0.88rem;
+            font-size: 0.84rem;
             color: var(--da-ink);
-            font-weight: 500;
+            font-weight: 700;
         }
 
-        /* ---- the signature moment: a rubber-stamp badge on completed results ---- */
+        /* ---- completed-result signal ---- */
         .da-stamp {
             display: inline-block;
             font-family: var(--da-font-mono);
             font-weight: 700;
-            font-size: 0.72rem;
-            letter-spacing: 0.14em;
+            font-size: 0.69rem;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: var(--da-accent);
-            border: 3px double var(--da-accent);
-            border-radius: 4px;
-            padding: 0.4rem 0.85rem;
-            transform: rotate(-6deg);
-            margin: 0.25rem 0 1.1rem 0;
-            animation: da-stamp-in 0.45s cubic-bezier(.2,1.8,.4,1) both;
+            color: var(--da-cyan);
+            background: rgba(77, 232, 255, 0.05);
+            border: 1px solid var(--da-cyan);
+            border-radius: 999px;
+            padding: 0.45rem 0.9rem;
+            margin: 0.25rem 0 1.1rem;
+            box-shadow:
+                0 0 16px rgba(77, 232, 255, 0.25),
+                inset 0 0 12px rgba(77, 232, 255, 0.08);
+            animation: da-stamp-in 0.5s cubic-bezier(.2,1.5,.4,1) both;
         }
+
+        .da-stamp::before {
+            content: "✦";
+            margin-right: 0.5rem;
+        }
+
         @keyframes da-stamp-in {
-            0%   { transform: scale(2.4) rotate(-18deg); opacity: 0; }
-            55%  { transform: scale(0.92) rotate(-4deg); opacity: 1; }
-            100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+            0% {
+                transform: scale(1.5);
+                opacity: 0;
+                filter: blur(4px);
+            }
+            60% {
+                transform: scale(0.96);
+                opacity: 1;
+                filter: blur(0);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         /* ---- empty state ---- */
         .da-empty {
-            border: 1px dashed var(--da-line);
+            border: 1px dashed rgba(140, 123, 255, 0.38);
             border-radius: var(--da-radius);
-            padding: 1.5rem;
+            padding: 1.65rem;
             text-align: center;
             font-family: var(--da-font-mono);
-            font-style: italic;
-            font-size: 0.85rem;
+            font-size: 0.81rem;
             color: var(--da-ink-faint);
-            background: var(--da-card);
+            background:
+                radial-gradient(circle at center, rgba(140,123,255,0.08), transparent 70%),
+                var(--da-card);
+            box-shadow: inset 0 0 30px rgba(140, 123, 255, 0.035);
             margin: 0.5rem 0 1rem;
         }
 
+        .da-empty::before {
+            content: "✦";
+            display: block;
+            margin-bottom: 0.55rem;
+            color: var(--da-accent-bright);
+            font-style: normal;
+            font-size: 1.2rem;
+            text-shadow: 0 0 16px var(--da-accent);
+        }
+
         /* ---- buttons ---- */
-        [data-testid="stBaseButton-primary"], [data-testid="stBaseButton-secondary"] {
-            font-family: var(--da-font-mono) !important;
-            font-size: 0.78rem !important;
-            letter-spacing: 0.07em;
-            text-transform: uppercase;
-            border-radius: 6px !important;
-            transition: transform 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-        }
-        [data-testid="stBaseButton-primary"] {
-            background: var(--da-accent) !important;
-            border-color: var(--da-accent) !important;
-            color: #fff !important;
-        }
-        [data-testid="stBaseButton-primary"]:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(31, 111, 92, 0.25);
-        }
+        [data-testid="stBaseButton-primary"],
         [data-testid="stBaseButton-secondary"] {
-            background: var(--da-card) !important;
+            font-family: var(--da-font-mono) !important;
+            font-size: 0.73rem !important;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border-radius: 8px !important;
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                color 0.15s ease,
+                border-color 0.15s ease;
+        }
+
+        [data-testid="stBaseButton-primary"] {
+            background: linear-gradient(100deg, #6658E8, var(--da-accent)) !important;
+            border-color: var(--da-accent) !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 0 16px rgba(140, 123, 255, 0.18);
+        }
+
+        [data-testid="stBaseButton-primary"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(140, 123, 255, 0.34);
+        }
+
+        [data-testid="stBaseButton-secondary"] {
+            background: rgba(15, 17, 40, 0.78) !important;
             border: 1px solid var(--da-line) !important;
             color: var(--da-ink) !important;
         }
+
         [data-testid="stBaseButton-secondary"]:hover {
-            border-color: var(--da-accent) !important;
-            color: var(--da-accent) !important;
+            border-color: var(--da-cyan) !important;
+            color: var(--da-cyan) !important;
+            box-shadow: 0 0 16px rgba(77, 232, 255, 0.12);
         }
 
         /* ---- inputs ---- */
         [data-testid="stTextInput"] input {
-            background: var(--da-card) !important;
+            background: rgba(10, 11, 30, 0.88) !important;
             border: 1px solid var(--da-line) !important;
-            border-radius: 6px !important;
+            border-radius: 8px !important;
             color: var(--da-ink) !important;
         }
-        [data-testid="stTextInput"] input:focus {
-            border-color: var(--da-accent) !important;
-            box-shadow: 0 0 0 1px var(--da-accent) !important;
+
+        [data-testid="stTextInput"] input::placeholder {
+            color: var(--da-ink-faint) !important;
         }
+
+        [data-testid="stTextInput"] input:focus {
+            border-color: var(--da-cyan) !important;
+            box-shadow: 0 0 0 1px var(--da-cyan), 0 0 16px rgba(77,232,255,0.12) !important;
+        }
+
         [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
-            background: var(--da-card) !important;
+            background: rgba(10, 11, 30, 0.88) !important;
             border-color: var(--da-line) !important;
-            border-radius: 6px !important;
+            border-radius: 8px !important;
+            color: var(--da-ink) !important;
+        }
+
+        div[data-baseweb="popover"],
+        div[data-baseweb="menu"] {
+            background: var(--da-card-solid) !important;
+            color: var(--da-ink) !important;
         }
 
         /* ---- file uploader ---- */
         [data-testid="stFileUploaderDropzone"] {
-            background: var(--da-card) !important;
-            border: 1.5px dashed var(--da-line) !important;
+            background:
+                linear-gradient(135deg, rgba(140,123,255,0.06), rgba(77,232,255,0.03)),
+                rgba(10, 11, 30, 0.82) !important;
+            border: 1px dashed rgba(140, 123, 255, 0.42) !important;
             border-radius: var(--da-radius) !important;
-            transition: border-color 0.15s ease, background 0.15s ease;
-        }
-        [data-testid="stFileUploaderDropzone"]:hover {
-            border-color: var(--da-accent) !important;
-            background: var(--da-accent-soft) !important;
-        }
-        [data-testid="stFileUploaderDropzoneInstructions"] {
-            font-family: var(--da-font-mono) !important;
+            transition:
+                border-color 0.15s ease,
+                background 0.15s ease,
+                box-shadow 0.15s ease;
         }
 
-        /* ---- alerts / spinner ---- */
-        [data-testid="stAlert"] {
-            border-radius: 6px !important;
-            font-family: var(--da-font-body) !important;
+        [data-testid="stFileUploaderDropzone"]:hover {
+            border-color: var(--da-cyan) !important;
+            background: rgba(77, 232, 255, 0.06) !important;
+            box-shadow: inset 0 0 28px rgba(77, 232, 255, 0.05);
         }
-        [data-testid="stSpinner"] {
+
+        [data-testid="stFileUploaderDropzoneInstructions"] {
             font-family: var(--da-font-mono) !important;
-            font-style: italic;
             color: var(--da-ink-soft) !important;
         }
 
-        /* ---- tabs styled as catalog-drawer tabs ---- */
-        [data-testid="stTabs"] { border-bottom: 1px solid var(--da-line); }
+        /* ---- alerts and spinner ---- */
+        [data-testid="stAlert"] {
+            border: 1px solid var(--da-line) !important;
+            border-radius: 9px !important;
+            color: var(--da-ink) !important;
+            font-family: var(--da-font-body) !important;
+            background: rgba(15, 17, 40, 0.9) !important;
+        }
+
+        [data-testid="stSpinner"] {
+            font-family: var(--da-font-mono) !important;
+            color: var(--da-cyan) !important;
+        }
+
+        /* ---- tabs ---- */
+        [data-testid="stTabs"] {
+            border-bottom: 1px solid var(--da-line);
+        }
+
         [data-testid="stTab"] {
             font-family: var(--da-font-mono) !important;
-            font-size: 0.82rem !important;
-            letter-spacing: 0.05em;
+            font-size: 0.77rem !important;
+            letter-spacing: 0.07em;
             text-transform: uppercase;
             color: var(--da-ink-faint) !important;
-            padding: 0.65rem 0.3rem !important;
+            padding: 0.7rem 0.35rem !important;
         }
-        [data-testid="stTab"][aria-selected="true"] {
-            color: var(--da-accent) !important;
-            font-weight: 600 !important;
-            border-bottom: 2px solid var(--da-accent) !important;
-        }
-        [data-testid="stTab"]:nth-of-type(1)::before { content: "SUM · "; color: var(--da-brass); }
-        [data-testid="stTab"]:nth-of-type(2)::before { content: "CMP · "; color: var(--da-brass); }
-        [data-testid="stTab"]:nth-of-type(3)::before { content: "ASK · "; color: var(--da-brass); }
-        [data-testid="stTabPanel"] { padding-top: 1.5rem; }
 
-        /* ---- chat, styled as marginalia notes rather than bubbles ---- */
+        [data-testid="stTab"][aria-selected="true"] {
+            color: var(--da-cyan) !important;
+            font-weight: 700 !important;
+            border-bottom: 2px solid var(--da-cyan) !important;
+            text-shadow: 0 0 14px rgba(77, 232, 255, 0.4);
+        }
+
+        [data-testid="stTab"]:nth-of-type(1)::before {
+            content: "SUM · ";
+            color: var(--da-accent-bright);
+        }
+
+        [data-testid="stTab"]:nth-of-type(2)::before {
+            content: "CMP · ";
+            color: var(--da-accent-bright);
+        }
+
+        [data-testid="stTab"]:nth-of-type(3)::before {
+            content: "ASK · ";
+            color: var(--da-accent-bright);
+        }
+
+        [data-testid="stTabPanel"] {
+            padding-top: 1.5rem;
+        }
+
+        /* ---- chat as research transmissions ---- */
         [data-testid="stChatMessage"] {
-            background: var(--da-card) !important;
+            background: rgba(15, 17, 40, 0.86) !important;
             border: 1px solid var(--da-line) !important;
             border-radius: var(--da-radius) !important;
-            padding: 0.9rem 1.1rem !important;
-            margin-bottom: 0.75rem !important;
-            box-shadow: none !important;
+            padding: 0.95rem 1.15rem !important;
+            margin-bottom: 0.8rem !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+            backdrop-filter: blur(10px);
         }
+
         [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
-            border-left: 3px solid var(--da-accent) !important;
+            border-left: 3px solid var(--da-cyan) !important;
+            box-shadow:
+                -5px 0 18px rgba(77, 232, 255, 0.06),
+                0 8px 30px rgba(0, 0, 0, 0.12) !important;
         }
+
         [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) {
-            border-left: 3px solid var(--da-brass) !important;
-            background: var(--da-paper) !important;
+            border-left: 3px solid var(--da-pink) !important;
+            background: rgba(20, 18, 43, 0.88) !important;
         }
-        [data-testid="stChatMessageAvatarUser"] { background: var(--da-brass) !important; }
-        [data-testid="stChatMessageAvatarAssistant"] { background: var(--da-accent) !important; }
+
+        [data-testid="stChatMessageAvatarUser"] {
+            background: linear-gradient(135deg, #A93F92, var(--da-pink)) !important;
+        }
+
+        [data-testid="stChatMessageAvatarAssistant"] {
+            background: linear-gradient(135deg, #347E99, var(--da-cyan)) !important;
+        }
+
         [data-testid="stChatInput"] {
             border: 1px solid var(--da-line) !important;
             border-radius: var(--da-radius) !important;
-            background: var(--da-card) !important;
+            background: rgba(10, 11, 30, 0.92) !important;
+            box-shadow: 0 0 24px rgba(140, 123, 255, 0.08);
+        }
+
+        /* ---- reduced motion and responsive layout ---- */
+        @media (prefers-reduced-motion: reduce) {
+            [data-testid="stAppViewContainer"]::before,
+            .da-stamp {
+                animation: none !important;
+            }
+
+            [data-testid="stBaseButton-primary"],
+            [data-testid="stBaseButton-secondary"] {
+                transition: none !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            [data-testid="stMainBlockContainer"] {
+                padding-top: 1.25rem;
+            }
+
+            .da-hero {
+                padding: 1.5rem 1.25rem 1.3rem;
+            }
+
+            .da-hero__title {
+                font-size: 2.35rem;
+            }
+
+            .da-hero__fields {
+                gap: 1rem 1.5rem;
+            }
         }
         </style>
         """,
@@ -350,33 +622,52 @@ def inject_css() -> None:
 
 
 def render_stamp(label: str) -> None:
-    st.markdown(f'<div class="da-stamp">{html.escape(label)}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="da-stamp">{html.escape(label)}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_chip_row(items) -> None:
-    chips = "".join(f'<span class="da-chip">{html.escape(x)}</span>' for x in items)
-    st.markdown(f'<div class="da-chip-row">{chips}</div>', unsafe_allow_html=True)
+    chips = "".join(
+        f'<span class="da-chip">{html.escape(str(item))}</span>'
+        for item in items
+    )
+    st.markdown(
+        f'<div class="da-chip-row">{chips}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_empty_state(text: str) -> None:
-    st.markdown(f'<div class="da-empty">{html.escape(text)}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="da-empty">{html.escape(text)}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_hero(model_name: str) -> None:
     model_short = model_name.replace("google_genai:", "")
     docs = st.session_state.get("total_docs_indexed", 0)
-    last_action = st.session_state.get("last_action", "—")
+    last_action = st.session_state.get("last_action", "-")
+
     st.markdown(
         f"""
         <div class="da-hero">
-          <div class="da-hero__eyebrow">Reading Room · RAG-assisted review</div>
-          <div class="da-hero__title">Document Assistant</div>
-          <div class="da-hero__subtitle">Summarize, compare, and interrogate your files —
-          indexed and searched on the fly.</div>
+          <div class="da-hero__eyebrow">
+            Research Orbit · RAG-assisted discovery
+          </div>
+          <div class="da-hero__title">Researcher</div>
+          <div class="da-hero__subtitle">
+            Summarize, compare, and interrogate your files -
+            indexed and searched across your knowledge universe.
+          </div>
           <div class="da-hero__fields">
             <div class="da-field">
               <span class="da-field__label">Model</span>
-              <span class="da-field__value">{html.escape(model_short)}</span>
+              <span class="da-field__value">
+                {html.escape(model_short)}
+              </span>
             </div>
             <div class="da-field">
               <span class="da-field__label">Docs indexed</span>
@@ -384,7 +675,9 @@ def render_hero(model_name: str) -> None:
             </div>
             <div class="da-field">
               <span class="da-field__label">Last action</span>
-              <span class="da-field__value">{html.escape(last_action)}</span>
+              <span class="da-field__value">
+                {html.escape(str(last_action))}
+              </span>
             </div>
           </div>
         </div>
@@ -397,14 +690,25 @@ def note(n: int) -> str:
     return "" if n == 1 else "s"
 
 
+
 # --------------------------------------------------------------------------
 # Backend helpers (unchanged logic — only presentation moved elsewhere)
 # --------------------------------------------------------------------------
 
 
 @st.cache_resource(show_spinner=False)
+def get_google_api_key() -> str:
+    """Return the Gemini key, preferring the provider-specific variable."""
+    return (os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or "").strip()
+
+
+@st.cache_resource(show_spinner=False)
 def get_model(model_name: str):
-    return init_chat_model(model_name)
+    api_key = get_google_api_key()
+    if not api_key:
+        raise ValueError("Set GEMINI_API_KEY in .env before using the model.")
+    os.environ["GOOGLE_API_KEY"] = api_key
+    return init_chat_model(model_name, api_key=api_key)
 
 
 def extract_text(response) -> str:
@@ -489,7 +793,7 @@ try:
 except Exception as exc:  # missing/invalid API key, provider package, etc.
     model_error = str(exc)
 
-if not (os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")):
+if not get_google_api_key():
     st.sidebar.warning(
         "No Google API key found in your environment (.env). Model calls will fail until one is set."
     )
@@ -675,7 +979,7 @@ with tab_ask:
                     response = model.invoke(prompt)
                     answer = extract_text(response)
             except Exception as exc:
-                answer = f"⚠️ The model call failed: {exc}"
+                answer = f"The model call failed: {exc}"
             st.write(answer)
         st.session_state.chat_history.append(("assistant", answer))
         st.session_state["last_action"] = "Answered a question"
